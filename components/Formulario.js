@@ -1,11 +1,15 @@
 import React, {useState, useEffect} from 'react';
-import {StyleSheet, Text, View, TouchableHighlight} from 'react-native';
+import {StyleSheet, Text, View, TouchableHighlight, Alert} from 'react-native';
 import {Picker} from '@react-native-community/picker';
 import axios from 'axios';
 
-const Formulario = () => {
-  const [moneda, setMoneda] = useState('');
-  const [criptomoneda, setCriptomoneda] = useState('');
+const Formulario = ({
+  moneda,
+  criptomoneda,
+  setMoneda,
+  setCriptomoneda,
+  setConsultarAPI,
+}) => {
   const [criptomonedas, setCriptomonedas] = useState([]);
 
   useEffect(() => {
@@ -19,17 +23,25 @@ const Formulario = () => {
   }, []);
 
   // Almacena las selecciones del usuario
-  const obtenerMoneda = (moneda) => {
-    setMoneda(moneda);
+  const obtenerMoneda = (monedaPicker) => {
+    setMoneda(monedaPicker);
   };
 
   const obtenerCriptomoneda = (cripto) => {
     setCriptomoneda(cripto);
-    console.log(cripto);
   };
 
   const cotizarPrecio = () => {
-    console.log('Cotizando..');
+    if (moneda.trim() === '' || criptomoneda.trim() === '') {
+      mostrarAlerta();
+      return;
+    }
+
+    setConsultarAPI(true);
+  };
+
+  const mostrarAlerta = () => {
+    Alert.alert('Error...', 'Ambos campos son obligatorios', [{text: 'OK'}]);
   };
 
   return (
@@ -37,7 +49,7 @@ const Formulario = () => {
       <Text style={styles.label}>Moneda</Text>
       <Picker
         selectedValue={moneda}
-        onValueChange={(moneda) => obtenerMoneda(moneda)}>
+        onValueChange={(monedaPicker) => obtenerMoneda(monedaPicker)}>
         <Picker.Item label="-- Seleccione --" value="" />
         <Picker.Item label="Dolar de Estados Unidos" value="USD" />
         <Picker.Item label="Peso Mexicano" value="MXN" />
